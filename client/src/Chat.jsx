@@ -9,6 +9,8 @@ import {
 } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { Container, Row, Col, FormInput, Button } from "shards-react";
+import ScrollableFeed from 'react-scrollable-feed'
+
 
 const link = new WebSocketLink({
     uri: `ws://localhost:4000/`,
@@ -47,43 +49,46 @@ const Messages = ({ user }) => {
 
     return (
         <>
-            {data.messages.map(({ id, user: messageUser, content }) => (
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: user === messageUser ? "flex-end" : "flex-start",
-                        paddingBottom: "1em",
-                    }}
-                >
-                    {user !== messageUser && (
-                        <div
-                            style={{
-                                height: 50,
-                                width: 50,
-                                marginRight: "0.5em",
-                                border: "2px solid #e5e6ea",
-                                borderRadius: 25,
-                                textAlign: "center",
-                                fontSize: "18pt",
-                                paddingTop: 5,
-                            }}
-                        >
-                            {messageUser.slice(0, 2).toUpperCase()}
-                        </div>
-                    )}
+            <ScrollableFeed>
+                {data.messages.map(({ id, user: messageUser, content }) => (
                     <div
                         style={{
-                            background: user === messageUser ? "#17c671" : "#e5e6ea",
-                            color: user === messageUser ? "white" : "black",
-                            padding: "1em",
-                            borderRadius: "1em",
-                            maxWidth: "60%",
+                            display: "flex",
+                            justifyContent: user === messageUser ? "flex-end" : "flex-start",
+                            paddingBottom: "1em",
                         }}
                     >
-                        {content}
+                        {user !== messageUser && (
+                            <div
+                                style={{
+                                    height: 50,
+                                    width: 50,
+                                    marginRight: "0.5em",
+                                    border: "2px solid #e5e6ea",
+                                    borderRadius: 25,
+                                    textAlign: "center",
+                                    fontSize: "18pt",
+                                    paddingTop: 5,
+                                }}
+                            >
+                                {messageUser.slice(0, 2).toUpperCase()}
+                            </div>
+                        )}
+
+                        <div
+                            style={{
+                                background: user === messageUser ? "#17c671" : "#e5e6ea",
+                                color: user === messageUser ? "white" : "black",
+                                padding: "1em",
+                                borderRadius: "1em",
+                                maxWidth: "60%",
+                            }}
+                        >
+                            {content}
+                        </div>
                     </div>
-                </div>
-            ))}
+                ))}
+            </ScrollableFeed>
         </>
     );
 };
@@ -105,11 +110,12 @@ const Chat = () => {
         });
     };
     return (
-        <Container>
+        <Container style={{ maxHeight: 600 }}>
             <Messages user={state.user} />
             <Row>
                 <Col xs={2} style={{ padding: 0 }}>
                     <FormInput
+                        placeholder="Enter name of user"
                         label="User"
                         value={state.user}
                         onChange={(evt) =>
@@ -122,6 +128,7 @@ const Chat = () => {
                 </Col>
                 <Col xs={8}>
                     <FormInput
+                        placeholder="Enter your message"
                         label="Content"
                         value={state.content}
                         onChange={(evt) =>
